@@ -8,27 +8,27 @@ settings = {
   "pin": 7 
 }
 
-
 GPIO.setmode(GPIO.BOARD)
 GPIO.setup(settings["pin"], GPIO.OUT)
 
-
 def status(url):
-  response, content = httplib2.Http(disable_ssl_certificate_validation=True).request(url)
+  client = httplib2.Http(disable_ssl_certificate_validation=True)
+  response, content = client.request(url)
   return simplejson.loads(content)
   
 def unread(response):
   return True if response["unread"] else False
 
-def turn_on_for_what():
-  GPIO.output( settings["pin"], True )
+def turn_on_for_what(pin):
+  GPIO.output(pin, True)
   time.sleep(.5)
-  GPIO.output( settings["pin"] , False )
-  print "Light ON!"
+  GPIO.output(pin , False)
 
+
+pull_requests = status(settings["url"])
 while True:
-  if unread( status(settings["url"]) ):
-    turn_on_for_what()
+  if unread(pull_requests):
+    turn_on_for_what(settings["pin"])
     time.sleep(5)
 
 
